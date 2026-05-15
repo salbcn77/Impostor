@@ -1,13 +1,13 @@
 const CACHE = 'el-impostor-v3';
 const FILES = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/categories.json',
-  '/facil.json',
-  '/normal.json',
-  '/manifest.json'
+  './',
+  'index.html',
+  'styles.css',
+  'app.js',
+  'categories.json',
+  'facil.json',
+  'normal.json',
+  'manifest.json'
 ];
 
 self.addEventListener('install', e => {
