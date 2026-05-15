@@ -66,33 +66,48 @@ function setupListeners() {
 }
 
 async function loadCategories() {
-  try {
-    const res = await fetch('categories.json?_=' + Date.now());
-    const catList = await res.json();
-    state.categories = [];
-    for (const cat of catList) {
-      try {
-        const wRes = await fetch(cat.file);
-        const words = await wRes.json();
-        state.categories.push({ ...cat, words, enabled: true });
-      } catch {
-        console.warn('No se pudo cargar:', cat.file);
-      }
-    }
-  } catch {
+  state.categories = [];
+  const seen = new Set();
+  function addCat(cat, words) {
+    if (seen.has(cat.id)) return;
+    seen.add(cat.id);
+    state.categories.push({ ...cat, words, enabled: true });
+  }
+  async function tryLoad(file) {
     try {
-      const res = await fetch('words.json');
-      const words = await res.json();
-      state.categories.push({ id: 'default', name: 'Palabras', file: 'words.json', words, enabled: true, icon: '📝' });
-    } catch {
-      state.categories.push({ id: 'default', name: 'Palabras', file: '', words: [
-        { word: 'playa', hint: 'arena' },
-        { word: 'guitarra', hint: 'cuerdas' },
-        { word: 'elefante', hint: 'trompa' },
-        { word: 'volcán', hint: 'lava' },
-        { word: 'pirámide', hint: 'egipto' },
-      ], enabled: true, icon: '📝' });
+      const r = await fetch(file + '?_=' + Date.now());
+      return r.ok ? await r.json() : null;
+    } catch { return null; }
+  }
+  const KNOWN = [
+    { id: 'facil', name: 'Fáciles', file: 'facil.json', icon: '📝' },
+    { id: 'normal', name: 'Variadas', file: 'normal.json', icon: '🌞' },
+  ];
+  const meta = await tryLoad('categories.json');
+  if (meta && Array.isArray(meta)) {
+    for (const cat of meta) {
+      const words = await tryLoad(cat.file);
+      if (words) addCat(cat, words);
     }
+  }
+  if (state.categories.length === 0) {
+    for (const guess of KNOWN) {
+      const words = await tryLoad(guess.file);
+      if (words) addCat(guess, words);
+    }
+  }
+  if (state.categories.length === 0) {
+    const words = await tryLoad('words.json');
+    if (words) addCat({ id: 'words', name: 'Palabras', file: 'words.json', icon: '📝' }, words);
+  }
+  if (state.categories.length === 0) {
+    addCat({ id: 'default', name: 'Palabras', file: '', icon: '📝' }, [
+      { word: 'playa', hint: 'arena' },
+      { word: 'guitarra', hint: 'cuerdas' },
+      { word: 'elefante', hint: 'trompa' },
+      { word: 'volcán', hint: 'lava' },
+      { word: 'pirámide', hint: 'egipto' },
+    ]);
   }
   renderCategories();
 }

@@ -1,4 +1,4 @@
-const CACHE = 'el-impostor-v2';
+const CACHE = 'el-impostor-v3';
 const FILES = [
   '/',
   '/index.html',
@@ -6,6 +6,7 @@ const FILES = [
   '/app.js',
   '/categories.json',
   '/facil.json',
+  '/normal.json',
   '/manifest.json'
 ];
 
