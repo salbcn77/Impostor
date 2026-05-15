@@ -338,6 +338,12 @@ body {
   gap: 14px;
 }
 
+#categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .setting-row {
   display: flex;
   align-items: center;
