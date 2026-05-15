@@ -1,0 +1,4 @@
+F[
+  { "id": "facil", "name": "Fáciles", "file": "facil.json", "icon": "📝" },
+  { "id": "normal", "name": "Variadas", "file": "normal.json", "icon": "🌞" }
+]
